@@ -1,150 +1,98 @@
-# Laboratorium 1 — Technologie mobilne i środowisko programistyczne
+# Sprawozdanie — Laboratorium 1
 
 **Przedmiot:** Budowa aplikacji mobilnych z użyciem technologii frontendowych  
-**Semestr:** 7, studia I stopnia  
-**Forma:** indywidualne ćwiczenia, dyskusja, praca nad projektem semestralnym 
+**Student / identyfikator:** 149905  
+**Projekt biznesowy:** MOB-027 — ChorePlanner  
+**Framework:** React Native (Expo SDK 58)  
+**Data zajęć:** 2026-10-22  
+**Repozytorium:** https://github.com/Averrr27/mobile-app-SEM7  
+**Commit / tag odpowiadający oddaniu:** tag `lab-01`
 
-## 1. Cele i rezultaty
+> Wypełnij na podstawie własnych działań. Odpowiedzi powinny zawierać dowody (pliki, commity, PR, wyniki uruchomienia), nie same deklaracje.
 
-Po laboratorium student:
-1. Wyjaśnia różnice między React Native, Flutter i NativeScript, w tym język, model UI, dostęp do API platform i narzędzia.
-2. Porównuje technologie według wymagań funkcjonalnych i niefunkcjonalnych, bez arbitralnego rankingu „najlepszy framework”.
-3. Uzasadnia wybór jednego frameworka do indywidualnego projektu MOB-001–MOB-050.
-4. Konfiguruje środowisko, uruchamia minimalną aplikację na emulatorze/symulatorze lub urządzeniu fizycznym.
-5. Zakłada repozytorium Git, tworzy Issue, gałąź roboczą i Pull Request.
-6. Dokumentuje wykonane działania oraz napotkane problemy w sprawozdaniu.
+## 1. Cel laboratorium
 
-**Warunek wejściowy:** otrzymana indywidualna karta biznesowa i wspólne `requirements.md` oraz `CONTRIBUTING.md`. Przed zajęciami zaleca się zainstalowanie Git, edytora i narzędzi wymaganych przez wybraną platformę. Instalacja Android SDK/Xcode może potrwać dłużej niż laboratorium.
+Zapoznanie się ze specyfiką projektu, dostępnymi narzędziami i frameworkami, utworzenie pomysłu i środowiska.
 
+## 2. Analiza technologii
 
-## 2. Zagadnienia do przygotowania
+**Dokument:** `docs/technology-comparison.md`  
+**Najważniejsze różnice:** React Native i NativeScript renderują natywne kontrolki platformy, a Flutter rysuje cały interfejs własnym silnikiem Impeller, więc wygląda identycznie na Androidzie i iOS. NativeScript daje bezpośredni dostęp do API systemu z poziomu JS, a React Native i Flutter wymagają do tego bibliotek lub własnych modułów natywnych. Pod względem testowania React Native i Flutter pozwalają testować logikę bez urządzenia, a NativeScript uruchamia testy przez Karma na urządzeniu, co utrudnia CI. Ekosystem bibliotek jest największy w React Native i Flutterze, a NativeScript ma małą społeczność.  
+**Źródła:** reactnative.dev, docs.expo.dev (SDK 58), docs.flutter.dev, docs.nativescript.org. `docs/technology-comparison.md`. Claude.
 
-- **React Native:** JavaScript/TypeScript, React, natywne komponenty platform, ekosystem narzędzi (np. Expo).
-- **Flutter:** Dart, widgety i własny mechanizm renderowania, pakiety, narzędzia diagnostyczne.
-- **NativeScript:** JavaScript/TypeScript, dostęp do natywnych API i natywne widoki.
-- **Porównywanie:** kompetencje zespołu, koszt utrzymania, ekosystem, integracje sprzętowe, testowalność, dostępność, rozmiar i wydajność aplikacji; unikanie twierdzeń bez danych.
-- **Narzędzia:** VS Code, Android Studio/Android SDK, Xcode (macOS), emulatory i urządzenia, menedżery pakietów, debugowanie.
-- **Git:** repozytorium, commit, branch, merge, remote, Issue, Pull Request; różnica między historią Git a kopią plików.
+## 3. Decyzja technologiczna
 
-## 3. Zadanie 1: analiza trzech frameworków
+**Dokument:** `docs/technology-decision.md`  
+**Wymagania karty MOB-027 wpływające na wybór:**
 
-Utwórz `docs/technology-comparison.md` i porównaj wszystkie trzy technologie.
+1. Trwały zapis lokalny i relacja obowiązek 1:N wykonanie z blokadą usuwania (FR-11, BR-04): potrzebna lokalna baza z kluczem obcym, a Expo SDK zawiera moduł SQLite.
+2. Formularze z walidacją dat i brakiem nakładania się wykonań (FR-08, BR-01): potrzebne pola daty i godziny oraz czytelne komunikaty błędów, dostępne jako gotowe komponenty.
+3. Obliczenie terminu kolejnego wykonania z testami (FR-10, BR-02, TEST-02): logikę da się wydzielić do czystych funkcji TypeScript i testować w Jest, także w CI.
 
-**Obowiązkowe kryteria:** język, sposób tworzenia/renderowania UI, dostęp do natywnych API, wsparcie Android/iOS, narzędzia, testowanie, ekosystem, ograniczenia. Dla każdego kryterium podaj krótkie uzasadnienie, a nie tylko ocenę 1–5. Zaznacz, co jest faktem potwierdzonym w dokumentacji, a co własną oceną.
+**Dlaczego wybrano framework:** znam React i TypeScript z wcześniejszych projektów, Expo dostarcza moduły zgodne z wersją SDK (baza, daty), logikę biznesową można testować bez urządzenia, a Expo Go pozwala uruchomić aplikację na telefonie bez instalacji Android Studio.  
+**Rozważona alternatywa:** Flutter, który ma lepszą wydajność UI i komplet narzędzi testowych w SDK. Kompromis: aplikacja CRUD nie potrzebuje zaawansowanej grafiki, a nauka Darta zabrałaby czas potrzebny na wymagania karty.  
+**Ryzyka:** (1) niezgodność wersji bibliotek między SDK Expo, która wystąpiła już przy tworzeniu szkieletu (punkt 7); (2) biblioteki natywne spoza Expo SDK nie działają w Expo Go i wymagają development builda.
 
-**Pytania kontrolne:**
-1. Dlaczego React Native nie jest tym samym co aplikacja webowa w WebView?
-2. Czym różni się podejście Fluttera do interfejsu od React Native?
-3. Co oznacza dostęp do natywnego API w NativeScript?
-4. Dlaczego liczba pobrań biblioteki nie wystarcza do oceny ryzyka technologicznego?
+## 4. Konfiguracja środowiska
 
-**Kryterium ukończenia:** porównanie zawiera wszystkie trzy technologie, co najmniej osiem kryteriów i odnośniki do dokumentacji źródłowej.
+| Narzędzie | Wersja | Rola |
+|---|---|---|
+| System operacyjny | Windows 11 Pro | środowisko pracy |
+| Framework / SDK | Expo SDK 58 (React Native 0.88, React 19.3), TypeScript 6.0 | framework aplikacji |
+| Runtime / menedżer pakietów | Node.js 24.14.1, npm 10.7.0, Git 2.54 | uruchamianie narzędzi, zależności, kontrola wersji |
+| Emulator / urządzenie | Expo Go na telefonie iPhone 15 Pro, iOS 26.2.1 | uruchamianie aplikacji |
+| Edytor / IDE | Visual Studio Code 1.145.0 | edycja kodu, Git |
 
-## 4. Dyskusja: wybór technologii w warunkach ograniczeń
+**Polecenia uruchomienia:**
 
-**Przypadek:** czteroosobowy zespół zna TypeScript i React. Ma w sześć miesięcy stworzyć aplikację Android/iOS z aparatem, geolokalizacją i trybem offline. Budżet jest ograniczony; aplikacja ma być utrzymywana przez dwa lata.
-
-Przygotuj samodzielnie decyzję (2 min), następnie porównaj argumenty w grupie. Rozważ: kompetencje, dostępność bibliotek, ryzyko integracji natywnych, testy, koszt utrzymania i alternatywy. **Nie ma jednej obowiązkowej odpowiedzi.**
-
-Do sprawozdania wpisz: wybrany framework, dwa argumenty za, jedno ryzyko oraz warunek, przy którym zmienił(a)byś decyzję.
-
-## 5. Zadanie 2: decyzja dla własnego projektu
-
-1. Przeczytaj przypisaną kartę `MOB-XXX`.
-2. Wypisz co najmniej trzy wymagania biznesowe wpływające na implementację (np. lokalna trwałość, obliczenia, formularze).
-3. Porównaj dwie realistyczne opcje technologiczne, uwzględniając wszystkie trzy w Zadaniu 1.
-4. Wybierz **jedną** z: React Native, Flutter, NativeScript.
-5. Utwórz `docs/technology-decision.md` w układzie:
-
-```md
-# ADR-001: Wybór frameworka
-## Kontekst i wymagania
-## Rozważone alternatywy
-## Decyzja
-## Uzasadnienie (co najmniej 3 argumenty)
-## Konsekwencje i ryzyka (co najmniej 2)
-## Warunki ponownego rozpatrzenia decyzji
+```text
+npm install
+npx expo start
+# zeskanowanie kodu QR w aplikacji Expo Go (telefon i komputer w tej samej sieci Wi-Fi)
 ```
 
-**Kryterium ukończenia:** decyzja wynika z wymagań projektu, a nie wyłącznie z osobistych preferencji.
+**Wynik uruchomienia:** aplikacja uruchomiła się w Expo Go i wyświetliła ekran startowy z tekstem. Typy (`npx tsc --noEmit`), lint (`npx expo lint`) i diagnoza `npx expo-doctor` (20/20 testów) przeszły bez błędów. 
+**Weryfikacja po zmianie ekranu:** tekst ekranu startowego w `src/app/index.tsx` zmieniono z „Chore app” na „MOB-027 ChorePlanner”.
 
-## 6. Zadanie 3: środowisko i uruchomienie
+## 5. Praca z Git
 
-Wybierz instrukcję oficjalną odpowiednią dla technologii:
+- **Issue:** (https://github.com/Averrr27/mobile-app-SEM7/issues/1)
+- **Gałąź:** `feature/initial-screen`
+- **Pull Request:** (https://github.com/Averrr27/mobile-app-SEM7/pull/2)
+- **Commit(y):** `4ecf464` chore: expo, eslint setup; `afb6ce2` feat: add basic landing page; Commit: 463f392b72ca136ccfca5850f43a379117a6cab4
+- **Samoocena PR:** przejrzałem diff (1 zmieniona linia w `src/app/index.tsx`, bez zbędnego kodu), sprawdziłem zgodność z wymaganiem zadania 3 (nazwa projektu MOB-027 na ekranie startowym), uruchomiłem `npx tsc --noEmit` i `npx expo lint` bez błędów oraz sprawdziłem ekran w Expo Go na iPhonie. Kompromis: brak testów automatycznych, bo framework testów nie jest jeszcze wybrany.
+- **Stan `main` po scaleniu:** aplikacja uruchamia się z `main` i pokazuje „MOB-027 ChorePlanner”
 
-- React Native: https://reactnative.dev/docs/environment-setup (dopuszczalna ścieżka Expo: https://docs.expo.dev/get-started/create-a-project/).
-- Flutter: https://docs.flutter.dev/get-started/install.
-- NativeScript: https://docs.nativescript.org/setup/.
+## 6. Dyskusja
 
-**Kroki wspólne:**
-1. Sprawdź wersje Git, runtime/SDK i narzędzi wymaganych przez wybraną technologię.
-2. Utwórz nowy projekt zgodnie z oficjalną instrukcją (nie kopiuj gotowej aplikacji CRUD).
-3. Uruchom aplikację na Androidzie **lub** iOS, w emulatorze/symulatorze lub na urządzeniu.
-4. Zmień widoczny tekst startowego ekranu na nazwę własnego projektu `MOB-XXX`.
-5. Uruchom ponownie aplikację po zmianie i sprawdź, czy ekran został zaktualizowany.
-6. Zapisz w `README.md`: wymagane narzędzia i wersje, polecenia instalacji/uruchomienia, docelową platformę oraz znane ograniczenia.
-7. Udokumentuj rezultat zrzutem ekranu (bez danych osobowych i sekretów).
+**Wybór technologii dla scenariusza zespołu:** React Native z Expo  
+**Dwa argumenty:** Znam TypeScript i React, więc w sześć miesięcy dostarczy więcej funkcji, niż ucząc się Darta. 
+Aparat, geolokalizację i zapis lokalny pokrywają moduły Expo SDK, utrzymywane razem z wersją SDK, co według mnie jest bardzo dobrym rozwiązaniem.
+**Największe ryzyko:** tryb offline z synchronizacją nie jet gotowy w żadnym frameworku. Trzeba samemu zaprojektować kolejkę zmian i rozwiązywanie konfliktów, a przy kolejnych aktualizacjach SDK utrzymanie zgodności bibliotek wymaga stałej pracy.  
+**Co mogłoby zmienić decyzję:** wymaganie zaawansowanego przetwarzania obrazu z aparatu w czasie rzeczywistym albo bardzo rozbudowanych animacji. Wtedy rozważyłbym Fluttera albo moduły natywne.
 
-**Kryterium ukończenia:** uruchomiona aplikacja i instrukcja umożliwiająca odtworzenie uruchomienia. Sam zrzut ekranu nie zastępuje demonstracji.
+## 7. Problemy i rozwiązania
 
-## 7. Zadanie 4: Git i organizacja pracy
+| Problem / objaw | Hipoteza przyczyny | Działanie | Wynik |
+|---|---|---|---|
+| `npx expo lint` nie mógł zainstalować ESLint (błąd npm ERESOLVE) | Expo Router pośrednio dociągał `react-dom@19.3.1`, niezgodny z `react@19.3.0` z SDK 58 | `npx expo install react-dom`, które przypięło wersję zgodną z SDK (19.3.0) | ESLint zainstalowany, lint i `expo-doctor` bez błędów |
+| Nowe pliki nie były widoczne w zakładce Source Control w VS Code, nie dało się dodać ich do commita | Nieodświeżony widok Git w edytorze; `git status` w terminalu pokazywał pliki poprawnie| Restart VS Code | Pliki widoczne w Source Control, commity wykonane |
 
-1. Utwórz indywidualne repozytorium z gałęzią `main` i właściwym `.gitignore`.
-2. Dodaj kod projektu i dokumentację; wykonaj pierwszy commit.
-3. Utwórz Issue: „Przygotowanie środowiska i ekranu startowego”, z kryteriami akceptacji.
-4. Utwórz gałąź `feature/initial-screen` i na niej zmień ekran startowy (jeśli zmiana była wykonana wcześniej, odtwórz ją na tej gałęzi).
-5. Wykonaj commit, opublikuj gałąź i utwórz Pull Request do `main`.
-6. W opisie PR podaj cel, sposób testowania, powiązane Issue i zrzut ekranu; wykonaj samoocenę zmian.
-7. Scal PR i sprawdź historię Git.
+## 8. Wnioski
 
-Przykładowe polecenia (dopasuj do własnego repozytorium):
+1. Expo upraszcza start projektu React Native: szkielet z TypeScriptem i nawigacją powstał bez konfiguracji Androida, a Expo Go pozwolił uruchomić aplikację na telefonie bez Android Studio. Wersje bibliotek trzeba jednak pilnować, dlatego biblioteki instaluję przez `npx expo install` i sprawdzam `npx expo-doctor`.
 
-```bash
-git init
-git branch -M main
-git status
-git add .
-git commit -m "chore: initialize mobile project"
-git switch -c feature/initial-screen
-# zmień ekran aplikacji
-git add .
-git commit -m "feat: customize initial screen"
-git push -u origin feature/initial-screen
-```
+## 9. Użycie narzędzi AI (jeżeli dotyczy)
 
-Przed `git push` skonfiguruj repozytorium zdalne (`git remote add origin ...`) i opublikuj `main`; PR można utworzyć w interfejsie hostingu. Nie dodawaj do repozytorium tokenów ani plików z sekretami.
+**Narzędzie i zakres wsparcia:** Claude: przegląd repozytorium względem `requirements.md` i `contributing.md`, utworzenie szkieletu Expo.
+**Jak zweryfikowano wynik:** uruchomienie aplikacji w Expo Go, `npx tsc --noEmit`, `npx expo lint`, `npx expo-doctor`; fakty o frameworkach sprawdzone w oficjalnej dokumentacji (reactnative.dev, docs.expo.dev, docs.flutter.dev, docs.nativescript.org).  
+**Elementy wykonane samodzielnie:** Wybór frameworka i uzasadnienie oparte na własnym doświadczeniu z Reactem, ustalenie interpretacji reguł biznesowych karty,  konfiguracja środowiska i uruchomienie na telefonie, kodowanie pierwszych komponentów, praca z Git.
 
-**Kryterium ukończenia:** prowadzący ma dostęp do repozytorium, istnieje Issue i scalony PR, a `main` zawiera działający szkielet aplikacji.
+## 10. Checklista oddania
 
-## 8. Rezultaty do oddania
-
-- Repozytorium projektu z dostępem dla prowadzącego.
-- `README.md` z instrukcją uruchomienia.
-- `docs/technology-comparison.md`.
-- `docs/technology-decision.md`.
-- `reports/lab-01.md` według udostępnionego szablonu.
-- Dowód uruchomienia i odnośniki do Issue, PR oraz commitów.
-
-**Termin:** zgodnie z terminem ogłoszonym przez prowadzącego. Zadania z kolejnych laboratoriów rozwijają to samo repozytorium.
-
-## 9. Ocena — 10 punktów
-
-| Obszar | Punkty |
-|---|---:|
-| Porównanie frameworków: trafność i źródła | 2 |
-| Decyzja technologiczna (ADR): zgodność z wymaganiami i argumentacja | 2 |
-| Środowisko, uruchomienie i powtarzalna instrukcja | 2 |
-| Git: Issue, gałąź, PR, historia | 2 |
-| Sprawozdanie: forma, dowody, problemy, wnioski | 2 |
-| **Razem** | **10** |
-
-**Samodzielność:** na prośbę prowadzącego student wyjaśnia fragment konfiguracji, decyzję lub historię zmian. Korzystanie z AI dokumentuje zgodnie ze wspólnymi zasadami projektu; nie zastępuje ono samodzielnej weryfikacji.
-
-## 11. Lista kontrolna
-
-- [ ] Porównałem(-am) trzy technologie na podstawie źródeł.
-- [ ] Powiązałem(-am) wybór frameworka z wymaganiami MOB-XXX.
-- [ ] Uruchomiłem(-am) aplikację na docelowej platformie.
-- [ ] Udokumentowałem(-am) instalację i uruchomienie.
-- [ ] Utworzyłem(-am) Issue, gałąź i scalony PR.
-- [ ] Oddałem(-am) sprawozdanie z dowodami i wnioskami.
+- [x] Porównanie trzech frameworków.
+- [x] ADR wyboru technologii.
+- [ ] Uruchomiona aplikacja i instrukcja w README.
+- [x] Issue, gałąź i scalony PR.
+- [ ] Linki do dowodów i historia pracy.
+- [x] Problemy, wnioski i deklaracja AI (jeżeli dotyczy).
