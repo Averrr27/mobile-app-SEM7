@@ -4,7 +4,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title} accessibilityRole="header">
-        Chore app
+        MOB-027 ChorePlanner
       </Text>
     </View>
   );
