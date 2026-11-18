@@ -7,7 +7,7 @@ import { DATABASE_NAME, migrateDbIfNeeded } from '../lib/db';
 export default function RootLayout() {
   return (
     <SQLiteProvider databaseName={DATABASE_NAME} onInit={migrateDbIfNeeded}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack />
       <StatusBar style="auto" />
     </SQLiteProvider>
   );
